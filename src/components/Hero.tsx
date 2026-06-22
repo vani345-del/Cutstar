@@ -44,16 +44,16 @@ export default function Hero() {
   const shouldReduceMotion = useReducedMotion();
 
   const starAnimation = shouldReduceMotion
-    ? { scale: 1.04, opacity: 0.07 }
+    ? { scale: 1, opacity: 0.18 }
     : {
-        scale: [1, 1.08],
-        opacity: [0.04, 0.10],
+        scale: [1, 1.06],
+        opacity: [0.18, 0.26],
       };
 
   const starTransition = shouldReduceMotion
     ? {}
     : {
-        duration: 5.5,
+        duration: 5,
         ease: 'easeInOut' as const,
         repeat: Infinity,
         repeatType: 'reverse' as const,
@@ -101,38 +101,29 @@ export default function Hero() {
         className="pointer-events-none absolute z-[3]"
         style={{
           top: '50%',
-          right: '5%',
-          transform: 'translateY(-50%)',
+          left: '75%',
+          transform: 'translate(-50%, -50%)',
+          filter: 'drop-shadow(0 0 100px rgba(124,92,252,0.15))',
         }}
         aria-hidden="true"
-        initial={{ scale: 1, opacity: 0.06 }}
+        initial={{ scale: 1, opacity: 0.18 }}
         animate={starAnimation}
         transition={starTransition}
       >
         <svg
-          width="850"
-          height="850"
-          viewBox="0 0 850 850"
+          width="900"
+          height="900"
+          viewBox="0 0 900 900"
           fill="none"
-          className="h-[min(90vh,850px)] w-[min(90vh,850px)]"
+          className="h-[min(100vh,900px)] w-[min(100vh,900px)] max-w-none"
         >
-          <defs>
-            <radialGradient id="star-fill" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="#7C5CFC" stopOpacity="0.25" />
-              <stop offset="50%" stopColor="#7C5CFC" stopOpacity="0.10" />
-              <stop offset="100%" stopColor="#7C5CFC" stopOpacity="0" />
-            </radialGradient>
-          </defs>
           {/* Primary 4-pointed star */}
           <path
-            d={fourPointStarPath(425, 425, 400, 80)}
-            fill="url(#star-fill)"
-          />
-          {/* Smaller inner star for layered depth */}
-          <path
-            d={fourPointStarPath(425, 425, 220, 55)}
+            d={fourPointStarPath(450, 450, 420, 85)}
             fill="#7C5CFC"
-            fillOpacity="0.04"
+            stroke="#9A82FD"
+            strokeWidth="1.5"
+            strokeOpacity="0.4"
           />
         </svg>
       </motion.div>
