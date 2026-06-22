@@ -12,21 +12,21 @@ const steps = [
     title: 'Upload',
     description:
       'Drop in your songs and any footage you want included.',
-    videoSrc: '/videos/step-1.mp4',
+    videoSrc: '/videos/firtcard.mp4',
   },
   {
     number: '02',
     title: 'We handle the rest',
     description:
       'Our engine syncs every cut to the beat, pulls in outside clips where needed, and builds out a full batch across multiple styles.',
-    videoSrc: '/videos/step-2.mp4',
+    videoSrc: '/videos/secondcard.mp4',
   },
   {
     number: '03',
     title: 'Post',
     description:
       'Receive ready-to-post content and start flooding the For You Page.',
-    videoSrc: '/videos/step-3.mp4',
+    videoSrc: '/videos/thirdcard.mp4',
   },
 ] as const;
 
@@ -173,7 +173,7 @@ function StepCard({
         {/* @ts-expect-error - videoSrc is dynamically typed via steps */}
         {step.videoSrc && (
           <video
-            className="absolute inset-0 z-[1] h-full w-full object-cover opacity-20 mix-blend-screen transition-opacity duration-500 group-hover:opacity-100"
+            className="absolute inset-0 z-[1] h-full w-full object-cover opacity-80 transition-opacity duration-500 group-hover:opacity-100"
             src={(step as any).videoSrc}
             autoPlay
             loop
