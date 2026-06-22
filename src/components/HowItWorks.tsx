@@ -144,11 +144,10 @@ function StepCard({
         />
 
         {/* Video Player */}
-        {/* @ts-expect-error - videoSrc is dynamically typed via steps */}
         {step.videoSrc && (
           <video
             className="absolute inset-0 z-[1] h-full w-full object-cover opacity-80 transition-opacity duration-500 group-hover:opacity-100"
-            src={(step as any).videoSrc}
+            src={step.videoSrc}
             autoPlay
             loop
             muted
