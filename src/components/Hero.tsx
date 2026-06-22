@@ -9,17 +9,18 @@ const containerVariants = {
   hidden: {},
   visible: {
     transition: {
-      staggerChildren: 0.15,
+      staggerChildren: 0.18,
+      delayChildren: 0.3,
     },
   },
 };
 
 const fadeUpVariants = {
-  hidden: { opacity: 0, y: 30 },
+  hidden: { opacity: 0, y: 40 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] as const },
+    transition: { duration: 1, ease: [0.25, 0.46, 0.45, 0.94] as const },
   },
 };
 
@@ -55,10 +56,25 @@ export default function Hero() {
 
   return (
     <section className="relative min-h-screen overflow-hidden bg-[#0A0A0F] text-white">
-      {/* ── Wordmark top-left ── */}
-      <div className="relative z-10 px-6 pt-8 sm:px-10">
-        <Logo className="text-xl tracking-wide text-white" />
+      {/* ── Ambient glow effects ── */}
+      <div className="pointer-events-none absolute inset-0">
+        {/* Top-right violet glow */}
+        <div className="absolute -right-32 -top-32 h-[500px] w-[500px] rounded-full bg-[#7C5CFC]/[0.07] blur-[150px]" />
+        {/* Bottom-left subtle glow */}
+        <div className="absolute -bottom-40 -left-40 h-[400px] w-[400px] rounded-full bg-[#7C5CFC]/[0.04] blur-[120px]" />
+        {/* Center gradient fade */}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0A0A0F]" />
       </div>
+
+      {/* ── Wordmark top-left ── */}
+      <motion.div
+        className="relative z-10 px-6 pt-8 sm:px-10 lg:px-16"
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.1 }}
+      >
+        <Logo className="text-xl tracking-wide text-white/90" />
+      </motion.div>
 
       {/* ── Pulsing star backdrop ── */}
       <motion.div
@@ -75,17 +91,23 @@ export default function Hero() {
           fill="none"
           className="h-[min(90vh,720px)] w-[min(90vh,720px)]"
         >
+          <defs>
+            <radialGradient id="star-gradient" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#7C5CFC" stopOpacity="0.12" />
+              <stop offset="70%" stopColor="white" stopOpacity="0.04" />
+              <stop offset="100%" stopColor="white" stopOpacity="0" />
+            </radialGradient>
+          </defs>
           <path
             d={starPath(360, 360, 340, 136)}
-            fill="white"
-            fillOpacity="0.06"
+            fill="url(#star-gradient)"
           />
         </svg>
       </motion.div>
 
       {/* ── Hero copy ── */}
       <motion.div
-        className="relative z-10 flex min-h-[calc(100vh-80px)] items-center px-6 pb-20 sm:px-10 lg:px-16"
+        className="relative z-10 flex min-h-[calc(100vh-80px)] items-center px-6 pb-24 sm:px-10 lg:px-16"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
@@ -100,17 +122,21 @@ export default function Hero() {
             }}
             variants={fadeUpVariants}
           >
-            Months of content.
+            <span className="bg-gradient-to-r from-white via-white to-white/60 bg-clip-text text-transparent">
+              Months of content.
+            </span>
             <br />
-            Delivered within a day.
+            <span className="bg-gradient-to-r from-white via-[#c4b5fd] to-[#7C5CFC] bg-clip-text text-transparent">
+              Delivered within a day.
+            </span>
           </motion.h1>
 
           {/* Subheadline */}
           <motion.p
             className="mt-8 max-w-2xl font-medium text-white/80"
             style={{
-              fontSize: 'clamp(1.5rem, 2vw + 0.5rem, 2rem)',
-              lineHeight: 1.35,
+              fontSize: 'clamp(1.25rem, 2vw + 0.5rem, 1.75rem)',
+              lineHeight: 1.4,
             }}
             variants={fadeUpVariants}
           >
@@ -129,7 +155,7 @@ export default function Hero() {
 
           {/* Credibility line */}
           <motion.p
-            className="mt-6 max-w-xl text-sm leading-relaxed text-[#8A8A99]/70"
+            className="mt-8 max-w-xl text-sm leading-relaxed text-[#8A8A99]/60"
             variants={fadeUpVariants}
           >
             The first AI music edit engine trained on the editing patterns behind
@@ -137,8 +163,22 @@ export default function Hero() {
             knows when to cut, zoom, hold a shot, switch angles, and create the
             moments that keep people watching.
           </motion.p>
+
+          {/* Scroll indicator */}
+          <motion.div
+            className="mt-16"
+            variants={fadeUpVariants}
+          >
+            <div className="flex items-center gap-3 text-[#8A8A99]/40">
+              <div className="h-8 w-px bg-gradient-to-b from-[#7C5CFC]/40 to-transparent" />
+              <span className="text-xs uppercase tracking-[0.2em]">Scroll to explore</span>
+            </div>
+          </motion.div>
         </div>
       </motion.div>
+
+      {/* ── Bottom fade to next section ── */}
+      <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#0A0A0F] to-transparent" />
     </section>
   );
 }
