@@ -44,10 +44,10 @@ export default function Hero() {
   const shouldReduceMotion = useReducedMotion();
 
   const starAnimation = shouldReduceMotion
-    ? { scale: 1, opacity: 0.18 }
+    ? { scale: 1, opacity: 0.35 }
     : {
         scale: [1, 1.06],
-        opacity: [0.18, 0.26],
+        opacity: [0.35, 0.50],
       };
 
   const starTransition = shouldReduceMotion
@@ -101,29 +101,44 @@ export default function Hero() {
         className="pointer-events-none absolute z-[3]"
         style={{
           top: '50%',
-          left: '75%',
+          left: '68%',
           transform: 'translate(-50%, -50%)',
-          filter: 'drop-shadow(0 0 100px rgba(124,92,252,0.15))',
         }}
         aria-hidden="true"
-        initial={{ scale: 1, opacity: 0.18 }}
+        initial={{ scale: 1, opacity: 0.35 }}
         animate={starAnimation}
         transition={starTransition}
       >
         <svg
-          width="900"
-          height="900"
-          viewBox="0 0 900 900"
+          width="1000"
+          height="1000"
+          viewBox="0 0 1000 1000"
           fill="none"
-          className="h-[min(100vh,900px)] w-[min(100vh,900px)] max-w-none"
+          className="h-[min(120vh,1000px)] w-[min(120vh,1000px)] max-w-none"
         >
-          {/* Primary 4-pointed star */}
+          <defs>
+            <radialGradient id="star-glow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#A894FF" stopOpacity="0.9" />
+              <stop offset="20%" stopColor="#7C5CFC" stopOpacity="0.7" />
+              <stop offset="100%" stopColor="#7C5CFC" stopOpacity="0" />
+            </radialGradient>
+          </defs>
+          
+          {/* Heavy blur layer for outer glow */}
           <path
-            d={fourPointStarPath(450, 450, 420, 85)}
+            d={fourPointStarPath(500, 500, 480, 100)}
             fill="#7C5CFC"
-            stroke="#9A82FD"
-            strokeWidth="1.5"
-            strokeOpacity="0.4"
+            filter="blur(60px)"
+            opacity="0.8"
+          />
+          
+          {/* Primary sharp 4-pointed star */}
+          <path
+            d={fourPointStarPath(500, 500, 460, 95)}
+            fill="url(#star-glow)"
+            stroke="#C4B5FD"
+            strokeWidth="2"
+            strokeOpacity="0.6"
           />
         </svg>
       </motion.div>
