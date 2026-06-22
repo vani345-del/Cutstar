@@ -24,31 +24,36 @@ const fadeUpVariants = {
   },
 };
 
-/* ── Inline SVG 5-pointed star path ── */
-function starPath(cx: number, cy: number, outerR: number, innerR: number) {
-  const points: string[] = [];
-  for (let i = 0; i < 10; i++) {
-    const angle = (Math.PI / 5) * i - Math.PI / 2;
-    const r = i % 2 === 0 ? outerR : innerR;
-    points.push(`${cx + r * Math.cos(angle)},${cy + r * Math.sin(angle)}`);
-  }
-  return `M${points.join('L')}Z`;
+/* ── 4-pointed geometric star path (sharp sparkle glyph) ── */
+function fourPointStarPath(cx: number, cy: number, outer: number, inner: number) {
+  // Creates a sharp, geometric 4-pointed star / sparkle shape
+  const pts = [
+    `${cx},${cy - outer}`,          // top
+    `${cx + inner},${cy - inner}`,  // top-right inner
+    `${cx + outer},${cy}`,          // right
+    `${cx + inner},${cy + inner}`,  // bottom-right inner
+    `${cx},${cy + outer}`,          // bottom
+    `${cx - inner},${cy + inner}`,  // bottom-left inner
+    `${cx - outer},${cy}`,          // left
+    `${cx - inner},${cy - inner}`,  // top-left inner
+  ];
+  return `M${pts.join('L')}Z`;
 }
 
 export default function Hero() {
   const shouldReduceMotion = useReducedMotion();
 
   const starAnimation = shouldReduceMotion
-    ? {}
+    ? { scale: 1.04, opacity: 0.07 }
     : {
-        scale: [0.95, 1.05],
-        opacity: [0.03, 0.08],
+        scale: [1, 1.08],
+        opacity: [0.04, 0.10],
       };
 
   const starTransition = shouldReduceMotion
     ? {}
     : {
-        duration: 5,
+        duration: 5.5,
         ease: 'easeInOut' as const,
         repeat: Infinity,
         repeatType: 'reverse' as const,
@@ -56,17 +61,85 @@ export default function Hero() {
 
   return (
     <section className="relative min-h-screen overflow-hidden bg-[#0A0A0F] text-white">
-      {/* ── Ambient glow effects ── */}
-      <div className="pointer-events-none absolute inset-0">
-        {/* Top-right violet glow */}
-        <div className="absolute -right-32 -top-32 h-[500px] w-[500px] rounded-full bg-[#7C5CFC]/[0.07] blur-[150px]" />
-        {/* Bottom-left subtle glow */}
-        <div className="absolute -bottom-40 -left-40 h-[400px] w-[400px] rounded-full bg-[#7C5CFC]/[0.04] blur-[120px]" />
-        {/* Center gradient fade */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0A0A0F]" />
+
+      {/* ─── Layer 1: Noise / grain texture ─── */}
+      <div
+        className="pointer-events-none absolute inset-0 z-[1] opacity-[0.035]"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+          backgroundSize: '128px 128px',
+        }}
+        aria-hidden="true"
+      />
+
+      {/* ─── Layer 2: Radial gradient glow behind star ─── */}
+      <div className="pointer-events-none absolute inset-0 z-[2]" aria-hidden="true">
+        {/* Main accent glow — biased right to fill dead space */}
+        <div
+          className="absolute h-[900px] w-[900px] rounded-full"
+          style={{
+            top: '10%',
+            right: '-10%',
+            background: 'radial-gradient(circle, rgba(124,92,252,0.10) 0%, rgba(124,92,252,0.04) 40%, transparent 70%)',
+            filter: 'blur(60px)',
+          }}
+        />
+        {/* Secondary warm glow bottom-left for depth */}
+        <div
+          className="absolute h-[500px] w-[500px] rounded-full"
+          style={{
+            bottom: '-5%',
+            left: '-5%',
+            background: 'radial-gradient(circle, rgba(124,92,252,0.05) 0%, transparent 65%)',
+            filter: 'blur(80px)',
+          }}
+        />
       </div>
 
-      {/* ── Wordmark top-left ── */}
+      {/* ─── Layer 3: Pulsing 4-pointed star — biased right ─── */}
+      <motion.div
+        className="pointer-events-none absolute z-[3]"
+        style={{
+          top: '50%',
+          right: '5%',
+          transform: 'translateY(-50%)',
+        }}
+        aria-hidden="true"
+        initial={{ scale: 1, opacity: 0.06 }}
+        animate={starAnimation}
+        transition={starTransition}
+      >
+        <svg
+          width="850"
+          height="850"
+          viewBox="0 0 850 850"
+          fill="none"
+          className="h-[min(90vh,850px)] w-[min(90vh,850px)]"
+        >
+          <defs>
+            <radialGradient id="star-fill" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#7C5CFC" stopOpacity="0.25" />
+              <stop offset="50%" stopColor="#7C5CFC" stopOpacity="0.10" />
+              <stop offset="100%" stopColor="#7C5CFC" stopOpacity="0" />
+            </radialGradient>
+          </defs>
+          {/* Primary 4-pointed star */}
+          <path
+            d={fourPointStarPath(425, 425, 400, 80)}
+            fill="url(#star-fill)"
+          />
+          {/* Smaller inner star for layered depth */}
+          <path
+            d={fourPointStarPath(425, 425, 220, 55)}
+            fill="#7C5CFC"
+            fillOpacity="0.04"
+          />
+        </svg>
+      </motion.div>
+
+      {/* ─── Layer 4 (z-10): Content ─── */}
+
+      {/* Wordmark top-left */}
       <motion.div
         className="relative z-10 px-6 pt-8 sm:px-10 lg:px-16"
         initial={{ opacity: 0, y: -10 }}
@@ -76,36 +149,7 @@ export default function Hero() {
         <Logo className="text-xl tracking-wide text-white/90" />
       </motion.div>
 
-      {/* ── Pulsing star backdrop ── */}
-      <motion.div
-        className="pointer-events-none absolute inset-0 flex items-center justify-center"
-        aria-hidden="true"
-        initial={{ scale: 1, opacity: 0.05 }}
-        animate={starAnimation}
-        transition={starTransition}
-      >
-        <svg
-          width="720"
-          height="720"
-          viewBox="0 0 720 720"
-          fill="none"
-          className="h-[min(90vh,720px)] w-[min(90vh,720px)]"
-        >
-          <defs>
-            <radialGradient id="star-gradient" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="#7C5CFC" stopOpacity="0.12" />
-              <stop offset="70%" stopColor="white" stopOpacity="0.04" />
-              <stop offset="100%" stopColor="white" stopOpacity="0" />
-            </radialGradient>
-          </defs>
-          <path
-            d={starPath(360, 360, 340, 136)}
-            fill="url(#star-gradient)"
-          />
-        </svg>
-      </motion.div>
-
-      {/* ── Hero copy ── */}
+      {/* Hero copy */}
       <motion.div
         className="relative z-10 flex min-h-[calc(100vh-80px)] items-center px-6 pb-24 sm:px-10 lg:px-16"
         variants={containerVariants}
@@ -177,8 +221,8 @@ export default function Hero() {
         </div>
       </motion.div>
 
-      {/* ── Bottom fade to next section ── */}
-      <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#0A0A0F] to-transparent" />
+      {/* Bottom fade to next section */}
+      <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#0A0A0F] to-transparent z-10" />
     </section>
   );
 }

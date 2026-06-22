@@ -27,6 +27,25 @@ const steps = [
   },
 ] as const;
 
+/* ── Per-card gradient & waveform variations ── */
+const cardStyles = [
+  {
+    gradient: 'linear-gradient(135deg, #1A1A24 0%, #221F33 60%, #1E1B2E 100%)',
+    waveColor: 'rgba(124,92,252,0.08)',
+    accentGlow: 'rgba(124,92,252,0.06)',
+  },
+  {
+    gradient: 'linear-gradient(160deg, #1A1A24 0%, #1F1D2F 50%, #231E30 100%)',
+    waveColor: 'rgba(124,92,252,0.06)',
+    accentGlow: 'rgba(140,110,255,0.05)',
+  },
+  {
+    gradient: 'linear-gradient(120deg, #1C1A28 0%, #1A1A24 40%, #201D2E 100%)',
+    waveColor: 'rgba(124,92,252,0.07)',
+    accentGlow: 'rgba(124,92,252,0.04)',
+  },
+];
+
 /* ------------------------------------------------------------------ */
 /*  Animation variants                                                 */
 /* ------------------------------------------------------------------ */
@@ -49,12 +68,51 @@ const cardVariants: Variants = {
 };
 
 /* ------------------------------------------------------------------ */
+/*  Audio waveform SVG (abstract visual texture)                       */
+/* ------------------------------------------------------------------ */
+
+function WaveformTexture({ color, seed }: { color: string; seed: number }) {
+  // Generate deterministic bar heights based on seed
+  const bars = 40;
+  const heights: number[] = [];
+  for (let i = 0; i < bars; i++) {
+    const t = i / bars;
+    // Create a waveform-like envelope: rises, peaks, falls
+    const envelope = Math.sin(t * Math.PI) * 0.8 + 0.2;
+    // Add variation using seed
+    const variation = Math.sin(i * 7.3 + seed * 13.7) * 0.3 + 0.7;
+    heights.push(envelope * variation);
+  }
+
+  return (
+    <svg
+      className="absolute bottom-0 left-0 right-0 h-[40%] w-full"
+      viewBox={`0 0 ${bars * 6} 100`}
+      preserveAspectRatio="none"
+      aria-hidden="true"
+    >
+      {heights.map((h, i) => (
+        <rect
+          key={i}
+          x={i * 6 + 1}
+          y={100 - h * 80}
+          width="3"
+          rx="1.5"
+          height={h * 80}
+          fill={color}
+        />
+      ))}
+    </svg>
+  );
+}
+
+/* ------------------------------------------------------------------ */
 /*  Play‑button overlay                                                */
 /* ------------------------------------------------------------------ */
 
 function PlayOverlay() {
   return (
-    <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+    <div className="pointer-events-none absolute inset-0 flex items-center justify-center z-[3]">
       <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/10 backdrop-blur-md border border-white/20 shadow-lg shadow-black/20 transition-transform duration-300 group-hover:scale-110">
         <svg
           width="20"
@@ -81,33 +139,54 @@ function PlayOverlay() {
 
 function StepCard({
   step,
+  index,
   className,
-  cardClassName,
 }: {
   step: (typeof steps)[number];
+  index: number;
   className?: string;
-  cardClassName?: string;
 }) {
+  const style = cardStyles[index];
+
   return (
     <motion.div className={className} variants={cardVariants}>
       {/* Video placeholder */}
       <div
-        className={`group relative aspect-video overflow-hidden rounded-2xl border border-white/[0.08] bg-[#1A1A24] shadow-2xl shadow-black/40 ${cardClassName ?? ''}`}
+        className="group relative aspect-video overflow-hidden rounded-2xl border border-white/[0.08] shadow-2xl shadow-black/40 transition-transform duration-300 hover:scale-[1.02]"
+        style={{ background: style.gradient }}
       >
-        {/* Gradient shimmer layers */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#7C5CFC]/[0.04] via-transparent to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-        
+        {/* Abstract blurred color blocks suggesting motion */}
+        <div
+          className="absolute inset-0 z-[1]"
+          style={{
+            background: `
+              radial-gradient(ellipse 60% 50% at 25% 40%, ${style.accentGlow}, transparent),
+              radial-gradient(ellipse 40% 60% at 75% 60%, ${style.accentGlow}, transparent)
+            `,
+          }}
+        />
+
+        {/* Waveform texture */}
+        <div className="absolute inset-0 z-[2] opacity-60">
+          <WaveformTexture color={style.waveColor} seed={index + 1} />
+        </div>
+
         {/* Scan line effect */}
-        <div className="absolute inset-0 opacity-[0.015]" style={{
+        <div className="absolute inset-0 z-[2] opacity-[0.02]" style={{
           backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.1) 2px, rgba(255,255,255,0.1) 4px)',
         }} />
-        
+
+        {/* Top gradient overlay */}
+        <div className="absolute inset-0 z-[2] bg-gradient-to-b from-transparent via-transparent to-black/30" />
+
         <PlayOverlay />
-        
-        {/* Hover glow */}
-        <div className="absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-500 group-hover:opacity-100" 
-          style={{ boxShadow: 'inset 0 0 60px rgba(124,92,252,0.06)' }} 
+
+        {/* Hover glow brightening */}
+        <div
+          className="absolute inset-0 z-[4] rounded-2xl opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+          style={{
+            background: `linear-gradient(135deg, rgba(124,92,252,0.06) 0%, transparent 50%)`,
+          }}
         />
       </div>
 
@@ -164,9 +243,7 @@ export default function HowItWorks() {
         </h2>
       </motion.div>
 
-      {/* ---------------------------------------------------------- */}
-      {/*  Asymmetric card grid                                       */}
-      {/* ---------------------------------------------------------- */}
+      {/* Asymmetric card grid */}
       <motion.div
         className="relative mx-auto max-w-6xl"
         variants={containerVariants}
@@ -174,21 +251,24 @@ export default function HowItWorks() {
         whileInView="visible"
         viewport={{ once: true, amount: 0.15 }}
       >
-        {/* ---------- Card 1 — large, left‑aligned ---------- */}
+        {/* Card 1 — large, left-aligned */}
         <StepCard
           step={steps[0]}
+          index={0}
           className="relative w-full sm:w-[65%]"
         />
 
-        {/* ---------- Card 2 — medium, pushed right ---------- */}
+        {/* Card 2 — medium, pushed right */}
         <StepCard
           step={steps[1]}
+          index={1}
           className="relative mt-16 ml-auto w-full sm:mt-20 sm:w-[55%]"
         />
 
-        {/* ---------- Card 3 — offset left ---------- */}
+        {/* Card 3 — offset left */}
         <StepCard
           step={steps[2]}
+          index={2}
           className="relative mt-16 w-full sm:mt-20 sm:ml-[10%] sm:w-[50%]"
         />
 
