@@ -30,6 +30,7 @@ export default function Logo({ className = '' }: LogoProps) {
           style={{
             display: 'inline-block',
             transform: `translateY(${OFFSETS[i].y}px) rotate(${OFFSETS[i].r}deg)`,
+            textShadow: '-1.5px 0px 0px rgba(0, 200, 255, 0.8), 1.5px 0px 0px rgba(255, 100, 0, 0.8)',
           }}
         >
           {letter}
