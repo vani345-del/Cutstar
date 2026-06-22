@@ -44,19 +44,18 @@ export default function Hero() {
   const shouldReduceMotion = useReducedMotion();
 
   const starAnimation = shouldReduceMotion
-    ? { scale: 1, opacity: 0.35 }
+    ? { scale: 1, opacity: 0.5 }
     : {
-        scale: [1, 1.06],
-        opacity: [0.35, 0.50],
+        scale: [1, 1.15, 1],
+        opacity: [0.4, 0.7, 0.4],
       };
 
   const starTransition = shouldReduceMotion
     ? {}
     : {
-        duration: 5,
+        duration: 4,
         ease: 'easeInOut' as const,
         repeat: Infinity,
-        repeatType: 'reverse' as const,
       };
 
   return (
@@ -74,13 +73,13 @@ export default function Hero() {
 
       {/* ─── Layer 2: Radial gradient glow behind star ─── */}
       <div className="pointer-events-none absolute inset-0 z-[2]" aria-hidden="true">
-        {/* Main accent glow — biased right to fill dead space */}
+        {/* Main accent glow — biased right, raised up behind headline */}
         <div
           className="absolute h-[900px] w-[900px] rounded-full"
           style={{
-            top: '10%',
+            top: '0%',
             right: '-10%',
-            background: 'radial-gradient(circle, rgba(124,92,252,0.10) 0%, rgba(124,92,252,0.04) 40%, transparent 70%)',
+            background: 'radial-gradient(circle, rgba(124,92,252,0.14) 0%, rgba(124,92,252,0.06) 40%, transparent 70%)',
             filter: 'blur(60px)',
           }}
         />
@@ -96,49 +95,48 @@ export default function Hero() {
         />
       </div>
 
-      {/* ─── Layer 3: Pulsing 4-pointed star — biased right ─── */}
+      {/* ─── Layer 3: Pulsing 4-pointed star — centered behind headline ─── */}
       <motion.div
-        className="pointer-events-none absolute z-[3]"
-        style={{
-          top: '50%',
-          left: '68%',
-          transform: 'translate(-50%, -50%)',
-        }}
+        className="pointer-events-none absolute inset-0 z-[3] flex items-center justify-center"
         aria-hidden="true"
-        initial={{ scale: 1, opacity: 0.35 }}
+        initial={{ scale: 1, opacity: 0.4 }}
         animate={starAnimation}
         transition={starTransition}
       >
         <svg
-          width="1000"
-          height="1000"
-          viewBox="0 0 1000 1000"
+          width="1200"
+          height="1200"
+          viewBox="0 0 1200 1200"
           fill="none"
-          className="h-[min(120vh,1000px)] w-[min(120vh,1000px)] max-w-none"
+          className="h-[100vh] w-[100vh] max-w-none sm:h-[110vh] sm:w-[110vh]"
         >
           <defs>
             <radialGradient id="star-glow" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="#A894FF" stopOpacity="0.9" />
-              <stop offset="20%" stopColor="#7C5CFC" stopOpacity="0.7" />
+              <stop offset="0%" stopColor="#C4B5FD" stopOpacity="1" />
+              <stop offset="25%" stopColor="#A894FF" stopOpacity="0.8" />
+              <stop offset="50%" stopColor="#7C5CFC" stopOpacity="0.5" />
               <stop offset="100%" stopColor="#7C5CFC" stopOpacity="0" />
             </radialGradient>
+            <filter id="star-blur" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="40" />
+            </filter>
           </defs>
           
-          {/* Heavy blur layer for outer glow */}
+          {/* Outer glow layer with proper SVG blur */}
           <path
-            d={fourPointStarPath(500, 500, 480, 100)}
+            d={fourPointStarPath(600, 600, 560, 120)}
             fill="#7C5CFC"
-            filter="blur(60px)"
-            opacity="0.8"
+            filter="url(#star-blur)"
+            opacity="0.9"
           />
           
           {/* Primary sharp 4-pointed star */}
           <path
-            d={fourPointStarPath(500, 500, 460, 95)}
+            d={fourPointStarPath(600, 600, 540, 110)}
             fill="url(#star-glow)"
             stroke="#C4B5FD"
-            strokeWidth="2"
-            strokeOpacity="0.6"
+            strokeWidth="2.5"
+            strokeOpacity="0.7"
           />
         </svg>
       </motion.div>
@@ -152,7 +150,7 @@ export default function Hero() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.1 }}
       >
-        <Logo className="text-xl tracking-wide text-white/90" />
+        <Logo className="text-xl text-white/90" />
       </motion.div>
 
       {/* Hero copy */}
@@ -205,7 +203,7 @@ export default function Hero() {
 
           {/* Credibility line */}
           <motion.p
-            className="mt-8 max-w-xl text-sm leading-relaxed text-[#8A8A99]/60"
+            className="mt-8 max-w-xl text-sm leading-relaxed text-[#8A8A99]/80"
             variants={fadeUpVariants}
           >
             The first AI music edit engine trained on the editing patterns behind
@@ -219,9 +217,9 @@ export default function Hero() {
             className="mt-16"
             variants={fadeUpVariants}
           >
-            <div className="flex items-center gap-3 text-[#8A8A99]/40">
-              <div className="h-8 w-px bg-gradient-to-b from-[#7C5CFC]/40 to-transparent" />
-              <span className="text-xs uppercase tracking-[0.2em]">Scroll to explore</span>
+            <div className="flex items-center gap-3 text-white/60">
+              <div className="h-10 w-px bg-gradient-to-b from-[#7C5CFC] to-transparent" />
+              <span className="text-xs font-medium uppercase tracking-[0.2em]">Scroll to explore</span>
             </div>
           </motion.div>
         </div>

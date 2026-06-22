@@ -109,32 +109,6 @@ function WaveformTexture({ color, seed }: { color: string; seed: number }) {
   );
 }
 
-/* ------------------------------------------------------------------ */
-/*  Play‑button overlay                                                */
-/* ------------------------------------------------------------------ */
-
-function PlayOverlay() {
-  return (
-    <div className="pointer-events-none absolute inset-0 flex items-center justify-center z-[3]">
-      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/10 backdrop-blur-md border border-white/20 shadow-lg shadow-black/20 transition-transform duration-300 group-hover:scale-110">
-        <svg
-          width="20"
-          height="24"
-          viewBox="0 0 22 26"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          aria-hidden="true"
-          className="ml-1"
-        >
-          <path
-            d="M21 11.268a2 2 0 0 1 0 3.464L3 24.124A2 2 0 0 1 0 22.392V3.608A2 2 0 0 1 3 1.876L21 11.268Z"
-            fill="rgba(255,255,255,0.9)"
-          />
-        </svg>
-      </div>
-    </div>
-  );
-}
 
 /* ------------------------------------------------------------------ */
 /*  Step card with text                                                */
@@ -179,27 +153,26 @@ function StepCard({
             loop
             muted
             playsInline
+            controls
           />
         )}
 
         {/* Waveform texture */}
-        <div className="absolute inset-0 z-[2] opacity-60">
+        <div className="pointer-events-none absolute inset-0 z-[2] opacity-60">
           <WaveformTexture color={style.waveColor} seed={index + 1} />
         </div>
 
         {/* Scan line effect */}
-        <div className="absolute inset-0 z-[2] opacity-[0.02]" style={{
+        <div className="pointer-events-none absolute inset-0 z-[2] opacity-[0.02]" style={{
           backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.1) 2px, rgba(255,255,255,0.1) 4px)',
         }} />
 
         {/* Top gradient overlay */}
-        <div className="absolute inset-0 z-[2] bg-gradient-to-b from-transparent via-transparent to-black/30" />
-
-        <PlayOverlay />
+        <div className="pointer-events-none absolute inset-0 z-[2] bg-gradient-to-b from-transparent via-transparent to-black/30" />
 
         {/* Hover glow brightening */}
         <div
-          className="absolute inset-0 z-[4] rounded-2xl opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+          className="pointer-events-none absolute inset-0 z-[4] rounded-2xl opacity-0 transition-opacity duration-300 group-hover:opacity-100"
           style={{
             background: `linear-gradient(135deg, rgba(124,92,252,0.06) 0%, transparent 50%)`,
           }}
